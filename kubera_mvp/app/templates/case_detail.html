@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}KUBERA — {{ case.case_id }}{% endblock %}
+{% block content %}
+<div class="page">
+  <div class="case-header">
+    <h1>Case {{ case.case_id }}</h1>
+    <span class="pill pill-{{ case.trust.route }}">{{ case.trust.route.replace('_',' ') }}</span>
+  </div>
+
+  <div class="console-grid">
+
+    <!-- LEFT: Trust score + sub-metrics -->
+    <div class="card">
+      <h3>Trust Score</h3>
+      <div class="score-big {{ 'good' if case.trust.trust_score >= 75 else ('warn' if case.trust.trust_score >= 45 else 'bad') }}">
+        {{ case.trust.trust_score }}<span class="of100">/100</span>
+      </div>
+
+      {% for label, key in [("Input Integrity","input_integrity"),
+                             ("Decision Stability","decision_stability"),
+                             ("Policy Alignment","policy_alignment"),
+                             ("Evidence Consistency","evidence_consistency")] %}
+      {% set val = case.trust.breakdown[key] %}
+      <div class="metric">
+        <div class="metric-row">
+          <span>{{ label }}</span>
+          <span>{{ (val*100)|round(0, 'floor')|int }}%</span>
+        </div>
+        <div class="bar"><div class="bar-fill {{ 'good' if val >= 0.6 else ('warn' if val >= 0.4 else 'bad') }}"
+             style="width: {{ (val*100)|round(0,'floor')|int }}%;"></div></div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- MIDDLE: Document + Probe evidence -->
+    <div class="card">
+      <h3>Flagged Document Region</h3>
+      <div class="doc-compare">
+        <div>
+          <p class="muted small">Original</p>
+          <img class="doc-img" src="{{ url_for('static', filename='uploads/' + case.original_image) }}">
+        </div>
+        <div>
+          <p class="muted small">Error Level Analysis (amplified)</p>
+          <img class="doc-img" src="{{ url_for('static', filename='uploads/' + case.ela_image) }}">
+        </div>
+      </div>
+      <p class="small muted">
+        {{ case.integrity.notes|join(' ') }}
+        {% if case.integrity.flagged_regions %}
+          — {{ case.integrity.flagged_regions|length }} anomalous tile(s), top z-score
+          {{ case.integrity.flagged_regions[0].z_score }}.
+        {% endif %}
+      </p>
+
+      <h3 class="mt">Decision Stability — Probe Test</h3>
+      <table class="probe-table">
+        <tr><th></th><th>Decision</th><th>Confidence</th></tr>
+        <tr>
+          <td>Original</td>
+          <td><span class="pill pill-{{ case.stability.original.decision }}">{{ case.stability.original.decision }}</span></td>
+          <td>{{ (case.stability.original.confidence*100)|round(1) }}%</td>
+        </tr>
+        <tr>
+          <td>Perturbed ({{ case.stability.perturbation.field }}
+              {{ case.stability.perturbation.change_pct }}%)</td>
+          <td><span class="pill pill-{{ case.stability.perturbed.decision }}">{{ case.stability.perturbed.decision }}</span></td>
+          <td>{{ (case.stability.perturbed.confidence*100)|round(1) }}%</td>
+        </tr>
+      </table>
+      <p class="small {{ 'bad-text' if case.stability.flipped else 'muted' }}">{{ case.stability.note }}</p>
+
+      <h3 class="mt">Relevant Policy Clause</h3>
+      {% for p in case.evidence.policies %}
+        <p class="quote">"{{ p.clause }}" <span class="muted small">— {{ p.id }} (match {{ (p.similarity*100)|int }}%)</span></p>
+      {% endfor %}
+
+      <h3 class="mt">Similar Historical Case</h3>
+      {% for c in case.evidence.similar_cases %}
+        <p><strong>{{ c.id }}</strong> — {{ c.summary }}
+          <span class="muted small">({{ c.outcome.replace('_',' ') }}, match {{ (c.similarity*100)|int }}%)</span></p>
+      {% endfor %}
+    </div>
+
+    <!-- RIGHT: Actions -->
+    <div class="card">
+      <h3>Case Status</h3>
+      <span class="pill pill-{{ case.trust.route }} big">{{ case.trust.route.replace('_',' ') }}</span>
+      <button class="btn mt" onclick="document.getElementById('rawpanel').classList.toggle('hidden')">View Evidence (raw)</button>
+      <button class="btn btn-primary mt" disabled title="Reviewer workflow is the intended product surface for this POC">
+        Escalate to Reviewer
+      </button>
+      <p class="small muted mt">Escalation routing is illustrative in this POC — no live reviewer
+        queue is wired up yet.</p>
+
+      <div id="rawpanel" class="raw hidden">
+        <pre>{{ case | tojson(indent=2) }}</pre>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

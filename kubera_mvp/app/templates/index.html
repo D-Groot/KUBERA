@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}KUBERA — Decision Console{% endblock %}
+{% block content %}
+<div class="page">
+  <h1>Decision Console</h1>
+  <p class="muted">Every case KUBERA has evaluated, most recent first.</p>
+
+  {% if not cases %}
+    <div class="card empty">
+      <p>No cases yet.</p>
+      <a class="btn" href="{{ url_for('kubera.new_case') }}">Run your first case</a>
+    </div>
+  {% else %}
+  <table class="case-table">
+    <thead>
+      <tr><th>Case</th><th>Created</th><th>Trust Score</th><th>Route</th></tr>
+    </thead>
+    <tbody>
+      {% for c in cases %}
+      <tr onclick="window.location='{{ url_for('kubera.case_detail', case_id=c['id']) }}'">
+        <td>{{ c['id'] }}</td>
+        <td class="muted">{{ c['created_at'][:19] }}</td>
+        <td class="score {{ 'good' if c['trust_score'] >= 75 else ('warn' if c['trust_score'] >= 45 else 'bad') }}">
+          {{ c['trust_score'] }}/100
+        </td>
+        <td><span class="pill pill-{{ c['route'] }}">{{ c['route'].replace('_',' ') }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}

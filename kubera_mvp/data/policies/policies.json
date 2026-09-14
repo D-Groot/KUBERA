@@ -1,0 +1,22 @@
+[
+  {
+    "id": "POL-4.2",
+    "clause": "Income documents with inconsistent compression or metadata require manual verification before the recommendation can be actioned.",
+    "tags": ["document_integrity", "income_proof", "tampering"]
+  },
+  {
+    "id": "POL-6.1",
+    "clause": "A loan recommendation whose decision changes under a routine perturbation of a self-reported field must be escalated for human review, regardless of stated model confidence.",
+    "tags": ["decision_stability", "confidence"]
+  },
+  {
+    "id": "POL-2.5",
+    "clause": "Applications with affordability ratio below 1.2x requested amount require secondary income verification.",
+    "tags": ["affordability", "income"]
+  },
+  {
+    "id": "POL-7.3",
+    "clause": "All escalated cases must be logged with the specific evidence (document region, policy clause, comparable case) that triggered escalation.",
+    "tags": ["auditability", "evidence"]
+  }
+]

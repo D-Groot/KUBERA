@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}KUBERA — New Case{% endblock %}
+{% block content %}
+<div class="page narrow">
+  <h1>New Case</h1>
+  <p class="muted">Upload the income document and case details. KUBERA runs the
+     Input Integrity check on the document and the Probe Test on the bank AI's
+     recommendation, then computes a Unified Trust Score.</p>
+
+  {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+
+  <form class="card form" action="{{ url_for('kubera.analyze') }}" method="post" enctype="multipart/form-data">
+    <label>Income document (salary slip — PNG/JPG)
+      <input type="file" name="document" accept=".png,.jpg,.jpeg" required>
+    </label>
+
+    <div class="grid2">
+      <label>Monthly income (₹)
+        <input type="number" name="monthly_income" value="60000" step="100">
+      </label>
+      <label>Monthly expenses (₹)
+        <input type="number" name="monthly_expenses" value="35000" step="100">
+      </label>
+      <label>Requested loan amount (₹)
+        <input type="number" name="requested_amount" value="500000" step="1000">
+      </label>
+      <label>Credit history score (0-1)
+        <input type="number" name="credit_history_score" value="0.7" step="0.01" min="0" max="1">
+      </label>
+      <label>Employment (years)
+        <input type="number" name="employment_years" value="3" step="0.5" min="0">
+      </label>
+    </div>
+
+    <button class="btn" type="submit">Run KUBERA Analysis</button>
+  </form>
+</div>
+{% endblock %}

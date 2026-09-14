@@ -1,0 +1,26 @@
+[
+  {
+    "id": "KB-19042",
+    "summary": "Tampered payslip, edited net salary field, confirmed fraud after reviewer escalation.",
+    "tags": ["document_integrity", "tampering", "income_proof"],
+    "outcome": "CONFIRMED_FRAUD"
+  },
+  {
+    "id": "KB-20117",
+    "summary": "Genuine payslip with unusual bank-statement formatting; cleared after manual check.",
+    "tags": ["document_integrity", "income_proof"],
+    "outcome": "CLEARED"
+  },
+  {
+    "id": "KB-21980",
+    "summary": "Approval flipped to reject under probe test due to overstated income; escalated.",
+    "tags": ["decision_stability", "confidence"],
+    "outcome": "ESCALATED"
+  },
+  {
+    "id": "KB-22456",
+    "summary": "Low affordability ratio flagged, secondary verification requested, ultimately approved.",
+    "tags": ["affordability", "income"],
+    "outcome": "APPROVED_AFTER_REVIEW"
+  }
+]
